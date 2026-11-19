@@ -4,5 +4,6 @@ export const environment = {
   settingsApiUrl: 'http://localhost:4000/api/settings',
   ordersApiUrl: 'http://localhost:4000/api/orders',
   authApiUrl: 'http://localhost:4000/api/auth',
+  salesApiUrl: 'http://localhost:4000/api/sales',
   useFallback: true,
 };

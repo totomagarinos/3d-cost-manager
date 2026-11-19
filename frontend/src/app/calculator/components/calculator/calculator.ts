@@ -10,8 +10,8 @@ import { LocalManager } from '../../../shared/services/local-manager.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SettingsService } from '../../../settings/services/settings.service';
 import { debounceTime } from 'rxjs';
-import { OrderService } from '../../../orders/services/order.service';
-import { CreateOrderDTO } from '../../../orders/models/order.model';
+import { SaleService } from '../../../sales/services/sale.service';
+import { CreateSaleDTO } from '../../../sales/models/sale.model';
 
 @Component({
   selector: 'app-calculator',
@@ -23,7 +23,7 @@ export class Calculator implements OnInit {
   protected readonly calculatorService = inject(CalculatorService);
   protected readonly materialService = inject(MaterialService);
   protected readonly settingsService = inject(SettingsService);
-  protected readonly orderService = inject(OrderService);
+  protected readonly saleService = inject(SaleService);
 
   private destroyRef = inject(DestroyRef);
   private localManager = inject(LocalManager);
@@ -35,12 +35,12 @@ export class Calculator implements OnInit {
 
   result = signal<CalculatorOutput | null>(null);
   error = signal<string | null>(null);
-  savingOrder = signal(false);
+  savingSale = signal(false);
 
   isModalOpen = signal(false);
-  orderTitle = signal('');
-  orderClient = signal('');
-  orderNotes = signal('');
+  saleTitle = signal('');
+  saleClient = signal('');
+  saleNotes = signal('');
 
   calculatorForm = new FormGroup({
     grams: new FormControl(0, {
@@ -128,42 +128,37 @@ export class Calculator implements OnInit {
     this.localManager.setData(this.STORAGE_KEY + '_result', output);
   }
 
-  saveOrder() {
-    const formValue = this.calculatorForm.getRawValue();
+  saveSale() {
     const output = this.result();
-    const settings = this.settingsService.settingsData();
-    const material = formValue.material;
+    const formValue = this.calculatorForm.getRawValue();
 
-    if (!material || !settings || !output) return;
+    const suppliesPrice = Number(formValue.suppliesPrice);
 
-    this.savingOrder.set(true);
+    if (!Number.isFinite(suppliesPrice)) {
+      this.error.set('El precio de los insumos no es válido.');
+      return;
+    }
 
-    const order: CreateOrderDTO = {
-      title: this.orderTitle(),
-      clientName: this.orderClient() || undefined,
-      notes: this.orderNotes() || undefined,
-      grams: Number(formValue.grams),
-      hours: Number(formValue.hours),
-      suppliesPrice: Number(formValue.suppliesPrice),
-      profitMultiplier: formValue.profitMultiplier ?? 2,
-      material: {
-        type: material.type,
-        brand: material.brand,
-        weight: Number(material.weight),
-        price: Number(material.price),
-      },
-      settings: { ...settings },
-      output: { ...output },
+    if (!output) return;
+
+    this.savingSale.set(true);
+
+    const sale: CreateSaleDTO = {
+      title: this.saleTitle(),
+      clientName: this.saleClient() || undefined,
+      notes: this.saleNotes() || undefined,
+      cost: output.totalCost + suppliesPrice,
+      salePrice: output.totalToCharge,
     };
 
-    this.orderService.createOrder(order).subscribe({
+    this.saleService.createSale(sale).subscribe({
       next: () => {
-        this.savingOrder.set(false);
+        this.savingSale.set(false);
         this.closeModal();
       },
       error: () => {
-        this.savingOrder.set(false);
-        this.error.set('Error al guardar el presupuesto.');
+        this.savingSale.set(false);
+        this.error.set('Error al guardar la venta.');
       },
     });
   }
@@ -174,8 +169,8 @@ export class Calculator implements OnInit {
 
   closeModal() {
     this.isModalOpen.set(false);
-    this.orderTitle.set('');
-    this.orderClient.set('');
-    this.orderNotes.set('');
+    this.saleTitle.set('');
+    this.saleClient.set('');
+    this.saleNotes.set('');
   }
 }

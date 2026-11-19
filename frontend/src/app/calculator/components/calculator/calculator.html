@@ -111,9 +111,10 @@
         <div class="mt-8">
           <button
             (click)="openModal()"
+            [disabled]="savingSale()"
             class="w-full bg-cyan-500 hover:bg-cyan-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-gray-900 font-bold py-3 px-6 rounded-lg transition-colors cursor-pointer"
           >
-            {{ savingOrder() ? 'Guardando...' : 'Guardar presupuesto' }}
+            {{ savingSale() ? 'Guardando...' : 'Guardar venta' }}
           </button>
         </div>
       }
@@ -126,24 +127,24 @@
       <div
         class="bg-[#1a1c23] w-full max-w-lg rounded-2xl border border-gray-500 shadow-2xl p-8 relative"
       >
-        <h2 class="text-2xl font-semibold text-white mb-6">Guardar presupuesto</h2>
+        <h2 class="text-2xl font-semibold text-white mb-6">Guardar venta</h2>
 
         <div class="space-y-4">
           <input
-            [value]="orderTitle()"
-            (input)="orderTitle.set($any($event.target).value)"
+            [value]="saleTitle()"
+            (input)="saleTitle.set($any($event.target).value)"
             placeholder="Título"
             class="w-full bg-[#2a2d36] text-white placeholder:text-gray-500 p-4 rounded-xl outline-none focus:ring-2 focus:ring-cyan-500"
           />
           <input
-            [value]="orderClient()"
-            (input)="orderClient.set($any($event.target).value)"
+            [value]="saleClient()"
+            (input)="saleClient.set($any($event.target).value)"
             placeholder="Nombre del cliente (opcional)"
             class="w-full bg-[#2a2d36] text-white placeholder:text-gray-500 p-4 rounded-xl outline-none focus:ring-2 focus:ring-cyan-500"
           />
           <input
-            [value]="orderNotes()"
-            (input)="orderNotes.set($any($event.target).value)"
+            [value]="saleNotes()"
+            (input)="saleNotes.set($any($event.target).value)"
             placeholder="Notas (opcional)"
             class="w-full bg-[#2a2d36] text-white placeholder:text-gray-500 p-4 rounded-xl outline-none focus:ring-2 focus:ring-cyan-500"
           />
@@ -158,11 +159,11 @@
           </button>
 
           <button
-            (click)="saveOrder()"
-            [disabled]="!orderTitle().trim() || savingOrder()"
+            (click)="saveSale()"
+            [disabled]="!saleTitle().trim() || savingSale()"
             class="bg-cyan-500 hover:bg-cyan-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-gray-900 font-bold py-3 px-8 rounded-lg transition-colors cursor-pointer"
           >
-            {{ savingOrder() ? 'Guardando...' : 'Guardar' }}
+            {{ savingSale() ? 'Guardando...' : 'Guardar venta' }}
           </button>
         </div>
       </div>

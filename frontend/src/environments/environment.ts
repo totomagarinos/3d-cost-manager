@@ -4,5 +4,6 @@ export const environment = {
   settingsApiUrl: 'https://3dcostmanager.com/api/settings',
   ordersApiUrl: 'https://3dcostmanager.com/api/orders',
   authApiUrl: 'https://3dcostmanager.com/api/auth',
+  salesApiUrl: 'https://3dcostmanager.com/api/sales',
   useFallback: false,
 };
