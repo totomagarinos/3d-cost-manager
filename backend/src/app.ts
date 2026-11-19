@@ -2,7 +2,6 @@ import express from "express";
 import {
   authRouter,
   materialRouter,
-  orderRouter,
   saleRouter,
   settingsRouter,
 } from "./routes";
@@ -64,7 +63,6 @@ app.use(express.json());
 app.use("/api/auth", authRouter);
 app.use("/api/materials", materialRouter);
 app.use("/api/settings", settingsRouter);
-app.use("/api/orders", orderRouter);
 app.use("/api/sales", saleRouter);
 
 app.use(errorHandler);
