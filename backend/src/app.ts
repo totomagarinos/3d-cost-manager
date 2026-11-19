@@ -1,5 +1,11 @@
 import express from "express";
-import { authRouter, materialRouter, orderRouter, settingsRouter } from "./routes";
+import {
+  authRouter,
+  materialRouter,
+  orderRouter,
+  saleRouter,
+  settingsRouter,
+} from "./routes";
 import mongoose from "mongoose";
 import morgan from "morgan";
 import helmet from "helmet";
@@ -59,6 +65,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/materials", materialRouter);
 app.use("/api/settings", settingsRouter);
 app.use("/api/orders", orderRouter);
+app.use("/api/sales", saleRouter);
 
 app.use(errorHandler);
 

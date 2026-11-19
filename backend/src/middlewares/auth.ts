@@ -2,8 +2,12 @@ import jwt, { type JwtPayload } from "jsonwebtoken";
 import type { NextFunction, Request, Response } from "express";
 import JWT_SECRET from "../config";
 
+export interface AppJwtPayload {
+  userId: string;
+}
+
 export interface AuthenticatedRequest extends Request {
-  user?: JwtPayload | string;
+  user?: AppJwtPayload;
 }
 
 export const authenticateToken = (
@@ -23,7 +27,7 @@ export const authenticateToken = (
       return;
     }
 
-    req.user = user;
+    req.user = user as AppJwtPayload;
     next();
   });
 };
