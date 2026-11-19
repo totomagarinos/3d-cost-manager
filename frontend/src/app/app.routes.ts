@@ -12,7 +12,7 @@ export const appRoutes = {
     root: '',
     calculator: 'calculator',
     materials: 'materials',
-    orders: 'orders',
+    sales: 'sales',
     settings: 'settings',
   },
 };
@@ -54,10 +54,10 @@ export const routes: Routes = [
           import('./settings/components/settings/settings').then((m) => m.Settings),
       },
       {
-        path: appRoutes.private.orders,
-        title: 'Órdenes | 3D Manager',
+        path: appRoutes.private.sales,
+        title: 'Ventas | 3D Manager',
         loadComponent: () =>
-          import('./orders/components/order-list/order-list').then((m) => m.OrderList),
+          import('./sales/components/sale-list/sale-list').then((m) => m.SaleList),
       },
     ],
   },
