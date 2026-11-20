@@ -14,7 +14,7 @@ COPY . .
 RUN bun run build
 
 # ETAPA 2: Servidor de producción (Nginx)
-FROM nginx:alpine
+FROM nginx:1.31.9-alpine
 
 # Copiamos la build de Angular
 COPY --from=builder /app/dist/frontend/browser /usr/share/nginx/html
