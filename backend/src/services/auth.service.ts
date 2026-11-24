@@ -50,31 +50,32 @@ export class AuthService {
   };
 
   static refresh = async (token: string) => {
+    const revoked = await RevokedToken.findOne({ token });
+    if (revoked) throw new AppError("Token revoked", 401);
+
+    let decoded: JwtPayload;
     try {
-      const revoked = await RevokedToken.findOne({ token });
-      if (revoked) throw new AppError("Token revoked", 401);
-
-      const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
-      const user = await User.findOne({ _id: decoded.userId });
-
-      if (!user) throw new AppError("Invalid refresh token.", 401);
-
-      // Revocar el token anterior antes de emitir uno nuevo (rotación)
-      await RevokedToken.create({
-        token,
-        expiresAt: new Date((decoded.exp as number) * 1000),
-      });
-
-      const accessToken = jwt.sign({ userId: user.id }, JWT_SECRET, {
-        expiresIn: "15m",
-      });
-      const refreshToken = jwt.sign({ userId: user.id }, JWT_SECRET, {
-        expiresIn: "7d",
-      });
-
-      return { accessToken, refreshToken };
+      decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
     } catch {
-      throw new AppError("Invalid refresh token", 401);
+      throw new AppError("Invalid refresh token.", 401);
     }
+
+    const user = await User.findOne({ _id: decoded.userId });
+    if (!user) throw new AppError("Invalid refresh token.", 401);
+
+    // Revocar el token anterior antes de emitir uno nuevo (rotación)
+    await RevokedToken.create({
+      token,
+      expiresAt: new Date((decoded.exp as number) * 1000),
+    });
+
+    const accessToken = jwt.sign({ userId: user.id }, JWT_SECRET, {
+      expiresIn: "15m",
+    });
+    const refreshToken = jwt.sign({ userId: user.id }, JWT_SECRET, {
+      expiresIn: "7d",
+    });
+
+    return { accessToken, refreshToken };
   };
 }

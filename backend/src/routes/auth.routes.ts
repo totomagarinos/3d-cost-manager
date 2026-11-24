@@ -1,8 +1,7 @@
 import { Router, type Request, type Response } from "express";
-import { message, parse } from "valibot";
+import { parse } from "valibot";
 import { LoginSchema, RegisterSchema } from "../schemas/auth.schema";
 import { AuthService } from "../services";
-import { asyncHandler } from "../utils/asyncHandler";
 import { authenticateToken } from "../middlewares/auth";
 import { authLimiter } from "../helpers/rateLimit";
 import jwt, { type JwtPayload } from "jsonwebtoken";
@@ -15,29 +14,29 @@ authRouter.use(authLimiter);
 
 authRouter.post(
   "/register",
-  asyncHandler(async (req: Request, res: Response): Promise<void> => {
+  async (req: Request, res: Response): Promise<void> => {
     const data = parse(RegisterSchema, req.body);
 
     const result = await AuthService.register(data);
 
     res.status(201).json(result);
-  }),
+  },
 );
 
 authRouter.post(
   "/login",
-  asyncHandler(async (req: Request, res: Response): Promise<void> => {
+  async (req: Request, res: Response): Promise<void> => {
     const data = parse(LoginSchema, req.body);
 
     const result = await AuthService.login(data);
 
     res.status(200).json(result);
-  }),
+  },
 );
 
 authRouter.post(
   "/refresh",
-  asyncHandler(async (req: Request, res: Response): Promise<void> => {
+  async (req: Request, res: Response): Promise<void> => {
     const { refreshToken } = req.body;
 
     if (!refreshToken) {
@@ -47,13 +46,13 @@ authRouter.post(
 
     const result = await AuthService.refresh(refreshToken);
     res.json(result);
-  }),
+  },
 );
 
 authRouter.post(
   "/logout",
   authenticateToken,
-  asyncHandler(async (req: Request, res: Response): Promise<void> => {
+  async (req: Request, res: Response): Promise<void> => {
     const { refreshToken } = req.body;
 
     if (refreshToken) {
@@ -65,5 +64,5 @@ authRouter.post(
     }
 
     res.json({ message: "Successfull logout." });
-  }),
+  },
 );
