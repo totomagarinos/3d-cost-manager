@@ -4,83 +4,62 @@ import { CreateMaterialSchema, UpdateMaterialSchema } from "../schemas";
 import { MaterialService } from "../services";
 import type { AuthenticatedRequest } from "../middlewares/auth";
 
-const isCastError = (error: unknown): error is Error & { name: "CastError" } =>
-  error instanceof Error && error.name === "CastError";
-
 export class MaterialController {
   static create = async (req: AuthenticatedRequest, res: Response) => {
-    try {
-      const validatedData = parse(CreateMaterialSchema, req.body);
-      const userId = (req.user as { userId: string }).userId;
+    const validatedData = parse(CreateMaterialSchema, req.body);
+    const userId = (req.user as { userId: string }).userId;
 
-      const newMaterial = await MaterialService.createMaterial(
-        validatedData,
-        userId,
-      );
+    const newMaterial = await MaterialService.createMaterial(
+      validatedData,
+      userId,
+    );
 
-      res.status(201).json(newMaterial);
-    } catch (error) {
-      res.status(400).json({ error: "Invalid data or server error." });
-    }
+    res.status(201).json(newMaterial);
   };
 
   static getAll = async (req: AuthenticatedRequest, res: Response) => {
-    try {
-      const userId = (req.user as { userId: string }).userId;
+    const userId = (req.user as { userId: string }).userId;
 
-      const materials = await MaterialService.getAllMaterials(userId);
+    const materials = await MaterialService.getAllMaterials(userId);
 
-      res.status(200).json(materials);
-    } catch (error) {
-      res.status(500).json({
-        error: "Internal server error while fetching materials.",
-      });
-    }
+    res.status(200).json(materials);
   };
 
   static update = async (req: AuthenticatedRequest, res: Response) => {
-    try {
-      const validatedData = parse(UpdateMaterialSchema, req.body);
+    const validatedData = parse(UpdateMaterialSchema, req.body);
 
-      const { id } = req.params;
-      if (typeof id !== "string")
-        return res.status(400).json({ error: "ID is required." });
+    const { id } = req.params;
+    if (typeof id !== "string")
+      return res.status(400).json({ message: "ID is required." });
 
-      const userId = (req.user as { userId: string }).userId;
+    const userId = (req.user as { userId: string }).userId;
 
-      const updatedMaterial = await MaterialService.updateMaterial(
-        id,
-        validatedData,
-        userId,
-      );
+    const updatedMaterial = await MaterialService.updateMaterial(
+      id,
+      validatedData,
+      userId,
+    );
 
-      res.status(200).json(updatedMaterial);
-    } catch (error) {
-      res.status(400).json({ error: "Error updating material." });
+    if (!updatedMaterial) {
+      return res.status(404).json({ message: "Material not found." });
     }
+
+    res.status(200).json(updatedMaterial);
   };
 
   static delete = async (req: AuthenticatedRequest, res: Response) => {
-    try {
-      const { id } = req.params;
-      if (typeof id !== "string")
-        return res.status(400).json({ error: "ID is required." });
+    const { id } = req.params;
+    if (typeof id !== "string")
+      return res.status(400).json({ message: "ID is required." });
 
-      const userId = (req.user as { userId: string }).userId;
+    const userId = (req.user as { userId: string }).userId;
 
-      const deletedMaterial = await MaterialService.deleteMaterial(id, userId);
+    const deletedMaterial = await MaterialService.deleteMaterial(id, userId);
 
-      if (!deletedMaterial) {
-        return res.status(404).json({ error: "Material not found." });
-      }
-
-      return res.status(200).json(deletedMaterial);
-    } catch (error) {
-      if (isCastError(error)) {
-        return res.status(400).json({ error: "Invalid material ID." });
-      }
-
-      return res.status(500).json({ error: "Error deleting material." });
+    if (!deletedMaterial) {
+      return res.status(404).json({ message: "Material not found." });
     }
+
+    return res.status(200).json(deletedMaterial);
   };
 }

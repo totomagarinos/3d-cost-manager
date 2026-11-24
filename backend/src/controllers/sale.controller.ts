@@ -25,7 +25,7 @@ export class SaleController {
   static delete = async (req: AuthenticatedRequest, res: Response) => {
     const { id } = req.params;
     if (typeof id !== "string") {
-      return res.status(400).json({ error: "ID is required" });
+      return res.status(400).json({ message: "ID is required" });
     }
 
     const userId = (req.user as { userId: string }).userId;
@@ -33,7 +33,7 @@ export class SaleController {
     const deletedSale = await SaleService.delete(id, userId);
 
     if (!deletedSale) {
-      return res.status(404).json({ error: "Sale not found." });
+      return res.status(404).json({ message: "Sale not found." });
     }
 
     return res.status(200).json(deletedSale);
