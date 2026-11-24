@@ -19,7 +19,7 @@ const settingsSchema = new Schema<ISettings>(
     machineWearPerHour: { type: Number, required: true, default: 0 },
     partsPrice: { type: Number, required: true, default: 0 },
     errorMarginPercentage: { type: Number, required: true, default: 0 },
-    userId: { type: String, required: true, index: true },
+    userId: { type: String, required: true, unique: true },
   },
   {
     timestamps: true,
