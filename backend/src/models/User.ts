@@ -7,6 +7,7 @@ export interface IUser {
   name: string;
   email: string;
   password: string;
+  telegramChatId?: string;
 }
 
 const userSchema = new Schema<IUser>(
@@ -21,6 +22,7 @@ const userSchema = new Schema<IUser>(
       trim: true,
     },
     password: { type: String, required: true, minlength: 8 },
+    telegramChatId: { type: String, unique: true, sparse: true },
   },
   {
     toJSON: {

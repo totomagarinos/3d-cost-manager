@@ -11,6 +11,7 @@ import helmet from "helmet";
 import compression from "compression";
 import { limiter } from "./helpers/rateLimit";
 import { errorHandler } from "./middlewares/errorHandler";
+import { telegramRouter } from "./routes/telegram.routes";
 
 const app = express();
 const DB_URL =
@@ -64,6 +65,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/materials", materialRouter);
 app.use("/api/settings", settingsRouter);
 app.use("/api/sales", saleRouter);
+app.use("/api/telegram", telegramRouter);
 
 app.use(errorHandler);
 
