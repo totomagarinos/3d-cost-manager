@@ -62,14 +62,6 @@
                   Desglose de costos
                 </p>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  @if (sale.cost !== undefined) {
-                    <div class="bg-[#2a2d36] rounded-lg p-3">
-                      <p class="text-gray-400 text-xs">Costo total</p>
-                      <p class="font-semibold">
-                        {{ sale.cost | currency: 'ARS' : 'symbol' : '1.0-0' }}
-                      </p>
-                    </div>
-                  }
                   <div class="bg-[#2a2d36] rounded-lg p-3">
                     <p class="text-gray-400 text-xs">Cobrado</p>
                     <p class="font-semibold text-[#00e5ff]">
@@ -78,10 +70,21 @@
                   </div>
                   @if (sale.cost !== undefined) {
                     <div class="bg-[#2a2d36] rounded-lg p-3">
+                      <p class="text-gray-400 text-xs">Costo total</p>
+                      <p class="font-semibold">
+                        {{ sale.cost | currency: 'ARS' : 'symbol' : '1.0-0' }}
+                      </p>
+                    </div>
+                    <div class="bg-[#2a2d36] rounded-lg p-3">
                       <p class="text-gray-400 text-xs">Ganancia</p>
                       <p class="font-semibold text-green-400">
                         {{ sale.salePrice - sale.cost | currency: 'ARS' : 'symbol' : '1.0-0' }}
                       </p>
+                    </div>
+                  } @else {
+                    <div class="bg-amber-500/10 border border-amber-500/40 rounded-lg p-3">
+                      <p class="text-amber-400 text-xs">Costo desconocido</p>
+                      <p class="text-gray-400 text-xs">Ganancia no disponible</p>
                     </div>
                   }
                 </div>
