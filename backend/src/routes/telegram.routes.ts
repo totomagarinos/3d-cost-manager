@@ -8,7 +8,8 @@ import {
   createLinkCode,
 } from "../services/telegram-link-code.service";
 import { User } from "../models";
-import { TelegramService } from "../services";
+import { SaleService, TelegramService } from "../services";
+import { parseSaleCommand } from "../utils/parse-sale-command";
 
 export const telegramRouter = Router();
 
@@ -78,9 +79,25 @@ telegramRouter.post(
       return;
     }
 
+    const extracted = parseSaleCommand(text);
+
+    if (!extracted) {
+      await TelegramService.sendMessage({
+        chat_id: chatId,
+        text: "Mandame: producto precio. Ej: Lampara 30000",
+      });
+      res.status(200).send("OK");
+      return;
+    }
+
+    const sale = await SaleService.createSale(
+      { title: extracted.title, salePrice: extracted.salePrice },
+      user.id,
+    );
+
     await TelegramService.sendMessage({
       chat_id: chatId,
-      text: "Recibido. La carga de ventas todavía no está activa.",
+      text: `✅ Vendido: ${sale.title} — $${sale.salePrice.toLocaleString("es-AR")}`,
     });
     res.status(200).send("OK");
   },
